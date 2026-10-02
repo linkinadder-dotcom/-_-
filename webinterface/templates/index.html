@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Паттерн безопасности обновлений</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --accent: #2b6cb0;
+            --success: #276749;
+            --danger: #c53030;
+            --bg: #f7fafc;
+            --card: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.9rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            animation: fade 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 18px;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--accent);
+            margin: 22px 0 10px;
+        }
+
+        .card {
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 15px 0;
+        }
+
+        .threat {
+            background: #fff5f5;
+            border-left: 5px solid var(--danger);
+        }
+
+        .success {
+            background: #f0fff4;
+            border-left: 5px solid var(--success);
+        }
+
+        .accordion {
+            margin: 12px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background: #edf2f7;
+            padding: 14px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-header:hover {
+            background: #e2e8f0;
+        }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: white;
+        }
+
+        .accordion-body.open {
+            max-height: 500px;
+        }
+
+        .accordion-body-inner {
+            padding: 16px 18px;
+        }
+
+        ul {
+            padding-left: 22px;
+            margin: 10px 0;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Паттерн обеспечения безопасности приложения</h1>
+        <p>Защита от угрозы использования скомпрометированного доверенного источника обновлений (Supply-Chain Attack)</p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">Обзор</button>
+            <button class="tab-btn" onclick="showTab('functions')">Функции</button>
+            <button class="tab-btn" onclick="showTab('architecture')">Архитектура</button>
+            <button class="tab-btn" onclick="showTab('algorithm')">Алгоритм</button>
+            <button class="tab-btn" onclick="showTab('requirements')">Требования</button>
+        </div>
+
+        <!-- Вкладка: Обзор -->
+        <div id="overview" class="tab-content active">
+            <h2>Описание паттерна</h2>
+            
+            <div class="card threat">
+                <strong>Угроза:</strong> Возможность внедрения вредоносного кода через скомпрометированные доверенные серверы обновлений программного обеспечения (supply-chain атака на канал обновлений).
+            </div>
+
+            <div class="card success">
+                <strong>Назначение паттерна:</strong> Предотвращение загрузки и установки вредоносных обновлений, защита целостности и аутентичности обновлений, сохранение работоспособности системы при компрометации одного или нескольких источников, быстрое обнаружение инцидента и безопасный откат.
+            </div>
+
+            <h3>Область применения</h3>
+            <p>Паттерн является частью автоматизированной системы управления обновлениями и включает:</p>
+            <ul>
+                <li>Сервер управления обновлениями (Update Management Server)</li>
+                <li>Клиентские агенты обновления</li>
+                <li>Доверенные источники (репозитории)</li>
+                <li>Сервис проверки целостности и аутентичности</li>
+                <li>Панель администратора (для ИБ и DevOps)</li>
+                <li>API для интеграции</li>
+            </ul>
+        </div>
+
+        <!-- Вкладка: Функции -->
+        <div id="functions" class="tab-content">
+            <h2>Функциональные возможности</h2>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    1. Базовый анализ обновлений
+                    <span>▼</span>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-body-inner">
+                        <ul>
+                            <li>Проверка цифровой подписи (code signing)</li>
+                            <li>Проверка хеш-сумм (SHA-256 / SHA-512)</li>
+                            <li>Проверка цепочки доверия сертификатов</li>
+                            <li>Проверка соответствия метаданных заявленным значениям</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    2. Многоисточниковая проверка (Multi-Source)
+                    <span>▼</span>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-body-inner">
+                        Поддержка нескольких независимых доверенных источников с возможностью кворума. Обновление принимается только при совпадении результатов проверки от заданного количества источников.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    3. Обнаружение аномалий
+                    <span>▼</span>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-body-inner">
+                        Выявление внезапного изменения подписей, необычного размера пакетов, изменения структуры метаданных и отклонения от исторического поведения источников.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    4. Контроль доступа и политики
+                    <span>▼</span>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-body-inner">
+                        <ul>
+                            <li>Аутентификация (логин/пароль, сертификат, API-ключ)</li>
+                            <li>Авторизация и проверка прав</li>
+                            <li>Проверка соответствия политике безопасности</li>
+                            <li>Фиксация подозрительной активности</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    5. Безопасный откат (Rollback)
+                    <span>▼</span>
+                </div>
+                <div class="accordion-body">
+                    <div class="accordion-body-inner">
+                        Механизм автоматического отката при обнаружении компрометации источника или установке вредоносного обновления. Поддержка offline-режима с локальным кэшем доверенных хешей и сертификатов.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Архитектура -->
+        <div id="architecture" class="tab-content">
+            <h2>Архитектура решения</h2>
+            
+            <div class="card">
+                <strong>Входная информация:</strong>
+                <ul>
+                    <li>Учётные данные клиента (логин/пароль, API-ключ, сертификат)</li>
+                    <li>Метаданные обновления (URL, версия, размер, хеш, подпись)</li>
+                    <li>Текущая политика безопасности и список доверенных источников</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <strong>Выходная информация:</strong>
+                <ul>
+                    <li>Решение: разрешить / заблокировать / потребовать дополнительную проверку</li>
+                    <li>Подробный лог запроса и результата обработки</li>
+                </ul>
+            </div>
+
+            <h3>Ключевые компоненты</h3>
+            <ul>
+                <li>Модуль многоуровневой проверки целостности</li>
+                <li>Движок кворума источников</li>
+                <li>Система обнаружения аномалий</li>
+                <li>Менеджер политик безопасности</li>
+                <li>Механизм безопасного отката</li>
+                <li>Подсистема аудита и логирования</li>
+            </ul>
+        </div>
+
+        <!-- Вкладка: Алгоритм -->
+        <div id="algorithm" class="tab-content">
+            <h2>Алгоритм работы паттерна</h2>
+            
+            <ol style="padding-left: 22px;">
+                <li style="margin-bottom:12px;"><strong>Получение запроса</strong> — клиент инициирует обновление через веб-интерфейс или API</li>
+                <li style="margin-bottom:12px;"><strong>Аутентификация и авторизация</strong> — проверка подлинности и прав клиента</li>
+                <li style="margin-bottom:12px;"><strong>Запрос из нескольких источников</strong> — параллельное получение обновления из основного и резервных репозиториев</li>
+                <li style="margin-bottom:12px;"><strong>Многоуровневая проверка</strong> — цифровая подпись + хеш + цепочка сертификатов + метаданные</li>
+                <li style="margin-bottom:12px;"><strong>Кворум</strong> — обновление принимается только при совпадении результатов от необходимого числа источников</li>
+                <li style="margin-bottom:12px;"><strong>Анализ аномалий</strong> — сравнение с историческим поведением источника</li>
+                <li style="margin-bottom:12px;"><strong>Изолированная установка</strong> — обновление применяется во временную среду</li>
+                <li style="margin-bottom:12px;"><strong>Проверка после установки</strong> — контроль целостности и поведения</li>
+                <li style="margin-bottom:12px;"><strong>Применение или откат</strong> — финальное решение + логирование</li>
+            </ol>
+        </div>
+
+        <!-- Вкладка: Требования -->
+        <div id="requirements" class="tab-content">
+            <h2>Основные требования</h2>
+
+            <h3>Надёжность</h3>
+            <ul>
+                <li>Обязательный контроль всей поступающей информации</li>
+                <li>Блокировка непроверенных действий</li>
+                <li>Сохранность политик, сертификатов и логов</li>
+                <li>Работоспособность при недоступности части источников</li>
+            </ul>
+
+            <h3>Совместимость</h3>
+            <ul>
+                <li>ОС семейства Linux</li>
+                <li>Контейнеризация (Docker / Podman)</li>
+                <li>Оркестрация (Kubernetes)</li>
+                <li>Системы мониторинга (Zabbix, Grafana + Prometheus)</li>
+                <li>Интеграция с Git</li>
+            </ul>
+
+            <h3>Технико-экономический эффект</h3>
+            <ul>
+                <li>Снижение риска установки вредоносных обновлений</li>
+                <li>Сокращение времени обнаружения и реакции на инцидент</li>
+                <li>Повышение отказоустойчивости процесса обновления</li>
+                <li>Снижение потенциального ущерба от supply-chain атак</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        Контрольная работа • Django + Replit<br>
+        Компонент веб-интерфейса системы управления обновлениями
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Скрываем все вкладки
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Показываем выбранную
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleAccordion(header) {
+            const body = header.nextElementSibling;
+            const isOpen = body.classList.contains('open');
+
+            // Закрываем все аккордеоны
+            document.querySelectorAll('.accordion-body').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('.accordion-header span').forEach(el => el.textContent = '▼');
+
+            // Открываем текущий, если он был закрыт
+            if (!isOpen) {
+                body.classList.add('open');
+                header.querySelector('span').textContent = '▲';
+            }
+        }
+    </script>
+</body>
+    <!-- Изменение 1 -->
+</html>
